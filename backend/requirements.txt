@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+assemblyai
+groq
+python-multipart
+python-dotenv
+pydub
