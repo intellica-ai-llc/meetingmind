@@ -587,7 +587,7 @@ export default function App() {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px 0' }}>
 
         {/* SECTION 2: APP DEMO (Moved UP) */}
-        <div className="app-panel" style={{
+        <div id="app-demo" className="app-panel" style={{
           position: 'relative',
           background: '#020408',
           border: '1.5px solid #00d4ff',

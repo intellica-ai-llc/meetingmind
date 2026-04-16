@@ -304,7 +304,7 @@ const SampleReportPreview = () => {
         />
       </div>
 
-      {/* CTA Below Preview */}
+      {/* CTA Below Preview - FIXED: now opens mailto */}
       <div style={{ textAlign: 'center', marginTop: '32px' }}>
         <button
           className="cta-button"
@@ -313,7 +313,7 @@ const SampleReportPreview = () => {
             fontSize: '14px',
             background: 'linear-gradient(135deg, #f59e0b, #d97706)',
           }}
-          onClick={() => document.getElementById('app-demo')?.scrollIntoView({ behavior: 'smooth' })}
+          onClick={() => window.location.href = 'mailto:intellica.ai@gmail.com?subject=MeetingMind%20Workshop%20Registration'}
         >
           Register to Build This
         </button>
