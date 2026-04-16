@@ -1,7 +1,569 @@
-*, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; background: #0a0e1a; min-height: 100vh; }
-button, input, textarea { font-family: inherit; }
-@keyframes pulse {
-  0%, 100% { opacity: 1; width: 60%; }
-  50% { opacity: 0.6; width: 80%; }
+/* ─────────────────────────────────────────────────────────────
+   MeetingMind — Global Styles v2.4
+   CSS Custom Properties (Design Tokens)
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* Backgrounds */
+  --color-bg-primary: #020b18;
+  --color-bg-secondary: #0a1628;
+  --color-bg-card: #0d1f35;
+  --color-bg-card-hover: #112240;
+  
+  /* Accents */
+  --color-accent-gold: #f59e0b;
+  --color-accent-gold-dim: rgba(245, 158, 11, 0.15);
+  --color-accent-gold-border: rgba(245, 158, 11, 0.3);
+  --color-accent-cyan: #0ea5e9;
+  --color-accent-cyan-dim: rgba(14, 165, 233, 0.08);
+  --color-accent-purple: #8b5cf6;
+  
+  /* Text */
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: rgba(148, 163, 184, 0.6);
+  
+  /* Borders */
+  --color-border: rgba(248, 250, 252, 0.07);
+  --color-border-accent: rgba(245, 158, 11, 0.3);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-primary);
+  min-height: 100vh;
+  color: var(--color-text-primary);
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HERO SECTION
+   ───────────────────────────────────────────────────────────── */
+
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #020b18 0%, #0a1628 40%, #050d1a 100%);
+  overflow: hidden;
+  padding: 80px 24px 100px;
+}
+
+/* Animated Grid Background */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 20s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes gridDrift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 60px 60px;
+  }
+}
+
+/* Ambient Glow */
+.hero-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(245, 158, 11, 0.07) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientPulse 8s ease-in-out infinite;
+}
+
+@keyframes ambientPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+/* Floating Particles */
+.hero-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatParticle linear infinite;
+}
+
+@keyframes floatParticle {
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-20px);
+    opacity: 0.8;
+  }
+}
+
+/* Hero Content Container */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Staggered Fade/Slide Animation */
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-brand {
+  animation: fadeSlideDown 0.6s ease forwards;
+  animation-delay: 0.1s;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.hero-headline {
+  animation: fadeSlideDown 0.6s ease forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.hero-details {
+  animation: fadeSlideDown 0.6s ease forwards;
+  animation-delay: 0.5s;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.hero-venue {
+  animation: fadeSlideDown 0.6s ease forwards;
+  animation-delay: 0.65s;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.hero-cta {
+  animation: fadeSlideDown 0.6s ease forwards;
+  animation-delay: 0.85s;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+/* Brand Logo */
+.hero-logo {
+  height: 44px;
+  width: auto;
+  margin-bottom: 10px;
+}
+
+.hero-workshops-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 10px;
+}
+
+/* Headline with Shimmer */
+.hero-headline h1 {
+  font-size: clamp(2.4rem, 5.5vw, 4.8rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 24px 0 16px;
+  background: linear-gradient(
+    90deg,
+    #f59e0b 0%,
+    #fbbf24 30%,
+    #ffffff 60%,
+    #f8fafc 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: headlineShimmer 6s linear infinite;
+}
+
+@keyframes headlineShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Event Details */
+.hero-details p {
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.hero-details .separator {
+  color: var(--color-accent-gold);
+}
+
+/* Venue Pill */
+.venue-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent-gold-border);
+  background: var(--color-accent-gold-dim);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 16px 0 24px;
+}
+
+.venue-pill svg {
+  width: 14px;
+  height: 14px;
+  color: var(--color-accent-gold);
+}
+
+/* CTA Button */
+.cta-button {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0a0f1e;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 15px 36px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 24px rgba(245, 158, 11, 0.3);
+  transition: all 0.25s ease;
+  animation: pulseRing 2.5s ease-out infinite;
+  animation-delay: 1.5s;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.5);
+  filter: brightness(1.08);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+}
+
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PIPELINE DIAGRAM SECTION
+   ───────────────────────────────────────────────────────────── */
+
+.pipeline-section {
+  background: linear-gradient(180deg, #020b18 0%, #071428 50%, #020b18 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 48px 24px;
+}
+
+.pipeline-ambient-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 500px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(14, 165, 233, 0.06) 0%,
+    rgba(245, 158, 11, 0.04) 40%,
+    transparent 70%
+  );
+  animation: ambientPulse 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Pipeline Cards */
+.pipeline-card {
+  position: relative;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-accent);
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  z-index: 1;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.06), 0 2px 8px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.pipeline-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pipeline-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(245, 158, 11, 0.65);
+  box-shadow: 0 0 32px rgba(245, 158, 11, 0.18),
+    0 0 8px rgba(245, 158, 11, 0.1), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Primary Node (Groq LLM) */
+.pipeline-card.primary-node {
+  animation: cardActivePulse 3s ease-in-out infinite;
+}
+
+.pipeline-card.ai-node:hover {
+  box-shadow: 0 0 32px rgba(245, 158, 11, 0.15),
+    inset 0 0 20px rgba(14, 165, 233, 0.05), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes cardActivePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 16px rgba(14, 165, 233, 0.1), 0 0 0 1px rgba(14, 165, 233, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(14, 165, 233, 0.22), 0 0 0 1px rgba(14, 165, 233, 0.45);
+  }
+}
+
+/* Section Label */
+.pipeline-section-label {
+  color: var(--color-accent-gold);
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+  letter-spacing: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Pipeline Heading */
+.pipeline-heading {
+  background: linear-gradient(90deg, #f8fafc 0%, #f59e0b 50%, #f8fafc 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation-play-state: paused;
+}
+
+.pipeline-heading.in-view {
+  animation: headingShimmerOnce 2s ease forwards;
+  animation-play-state: running;
+}
+
+@keyframes headingShimmerOnce {
+  from {
+    background-position: -100% center;
+  }
+  to {
+    background-position: 100% center;
+  }
+}
+
+/* Technology Pills */
+.tech-pill {
+  background: var(--color-accent-gold-dim);
+  border: 1px solid var(--color-accent-gold-border);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+}
+
+.tech-pill.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.tech-pill:hover {
+  border-color: rgba(245, 158, 11, 0.6);
+  background: rgba(245, 158, 11, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SAMPLE REPORT PREVIEW
+   ───────────────────────────────────────────────────────────── */
+
+.report-preview {
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-bg-card);
+  padding: 24px;
+  margin: 32px 0;
+}
+
+.report-preview-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, var(--color-bg-primary));
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   WORKSHOP CARDS
+   ───────────────────────────────────────────────────────────── */
+
+.workshop-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 32px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.workshop-card:hover {
+  border-color: var(--color-border-accent);
+  box-shadow: 0 0 32px rgba(245, 158, 11, 0.08);
+}
+
+.workshop-card-icon {
+  color: var(--color-accent-gold);
+  margin-bottom: 20px;
+}
+
+.workshop-card-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.workshop-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.workshop-card-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.workshop-card-btn {
+  border: 1px solid var(--color-accent-gold);
+  color: var(--color-accent-gold);
+  background: transparent;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.workshop-card-btn:hover {
+  background: var(--color-accent-gold);
+  color: #020b18;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   REDUCED MOTION PREFERENCES
+   ───────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .connector-pulse {
+    animation: none;
+  }
+  
+  .hero-particle {
+    animation: none;
+  }
+  
+  .cta-button {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+  }
+  
+  .hero-headline h1 {
+    animation: none;
+  }
+  
+  .pipeline-card {
+    transition: none;
+  }
+  
+  .pipeline-card.primary-node {
+    animation: none;
+  }
+  
+  .pipeline-ambient-glow {
+    animation: none;
+    opacity: 0.5;
+  }
+  
+  .pipeline-heading {
+    animation: none;
+    -webkit-text-fill-color: #f8fafc;
+    background: none;
+  }
+  
+  .tech-pill {
+    transition: none;
+  }
 }

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// MeetingMind — Frontend v2.0
+// MeetingMind — Frontend v2.4
 // Intellica AI · AI Agents Bootcamp
 //
 // Key design decisions:
@@ -9,10 +9,17 @@
 //   with animated border, scan-line overlay, terminal aesthetic
 // - All v2.0 features: 13-field extraction, demo mode,
 //   tone selector, coach card, talk time, sentiment ring
+// - NEW v2.4: CSS-animated hero, reordered sections,
+//   sample report preview, workshop cards, scroll reveals
 // ─────────────────────────────────────────────────────────────
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import axios from 'axios'
+
+// ── New Components for v2.4 ─────────────────────────────────
+import Hero from './components/Hero'
+import SampleReportPreview from './components/SampleReportPreview'
+import WorkshopCards from './components/WorkshopCards'
 
 // ── Environment config ─────────────────────────────────────
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -270,6 +277,35 @@ export default function App() {
     return () => clearInterval(recordingTimer.current)
   }, [isRecording])
 
+  // Scroll reveal for pipeline cards and tech pills (v2.4)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.15 }
+    )
+
+    const cards = document.querySelectorAll('.pipeline-card')
+    cards.forEach((card, index) => {
+      card.style.transitionDelay = `${index * 0.12}s`
+      observer.observe(card)
+    })
+
+    const pills = document.querySelectorAll('.tech-pill')
+    pills.forEach((pill, index) => {
+      pill.style.transitionDelay = `${0.6 + index * 0.06}s`
+      observer.observe(pill)
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
   // ── Countdown then start recording ──────────────────────
   async function handleStartMeeting() {
     for (let i = 3; i >= 1; i--) {
@@ -280,7 +316,7 @@ export default function App() {
     startBrowserRecording()
   }
   
-    async function startBrowserRecording() {
+  async function startBrowserRecording() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true },
@@ -301,8 +337,7 @@ export default function App() {
       setError('Microphone access denied. Please allow microphone access and try again.')
       setStep(STEPS.ERROR)
     }
-  }    
-      
+  }
 
   function handleStopRecording() {
     if (mediaRecorderRef.current && isRecording) {
@@ -546,139 +581,12 @@ export default function App() {
     <div style={{ background: '#060810', minHeight: '100vh', color: '#e8f0fe',
       fontFamily: "'SF Pro Display', system-ui, -apple-system, sans-serif" }}>
 
-      {/* ════════════════════════════════════════════════════
-          SECTION 1 — BANNER
-      ════════════════════════════════════════════════════ */}
-      <div style={{ width: '100%', position: 'relative' }}>
-        <img src="/AIAB_banner.png" alt="AI Agents Bootcamp"
-          style={{ width: '100%', display: 'block', maxHeight: 420, objectFit: 'cover' }} />
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          background: 'linear-gradient(transparent, rgba(6,8,16,0.98))',
-          padding: '40px 40px 20px',
-          fontSize: 12, color: '#6b7fa3', letterSpacing: '1.5px',
-        }}>
-          📍 Workshop Venue: University of the West Indies, St. Augustine Campus
-        </div>
-      </div>
+      {/* SECTION 1: HERO (NEW - Replaces PNG banner) */}
+      <Hero />
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px 0' }}>
 
-        {/* ════════════════════════════════════════════════════
-            SECTION 2 — ARCHITECTURE
-        ════════════════════════════════════════════════════ */}
-        <div style={S.card}>
-          <span style={S.label}>How It Works</span>
-          <h2 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 28px', color: '#e8f0fe' }}>
-            The Three-Agent Pipeline
-          </h2>
-          <div style={{ overflowX: 'auto' }}>
-            <svg viewBox="0 0 860 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', minWidth: 600 }}>
-              <defs>
-                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                  <path d="M0,0 L0,6 L8,3 z" fill="#1e3a5f" />
-                </marker>
-              </defs>
-              <rect x="10" y="60" width="130" height="80" rx="12" fill="#0d1b2e" stroke="#1e3a5f" strokeWidth="1.5" />
-              <text x="75" y="88" textAnchor="middle" fill="#6b7fa3" fontSize="10" fontWeight="700" letterSpacing="1">INPUT</text>
-              <text x="75" y="108" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">📱 Phone</text>
-              <text x="75" y="126" textAnchor="middle" fill="#6b7fa3" fontSize="10">MP3 / M4A</text>
-              <line x1="140" y1="100" x2="175" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
-              <text x="157" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">email</text>
-              <rect x="175" y="50" width="150" height="100" rx="12" fill="#0d1b2e" stroke="#00d4ff" strokeWidth="1.5" />
-              <text x="250" y="75" textAnchor="middle" fill="#00d4ff" fontSize="9" fontWeight="700" letterSpacing="1">AGENT 1</text>
-              <text x="250" y="95" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">AssemblyAI</text>
-              <text x="250" y="113" textAnchor="middle" fill="#6b7fa3" fontSize="10">Transcription</text>
-              <text x="250" y="129" textAnchor="middle" fill="#6b7fa3" fontSize="10">+ Diarization</text>
-              <line x1="325" y1="100" x2="365" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
-              <text x="345" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">speakers</text>
-              <rect x="365" y="60" width="130" height="80" rx="12" fill="#0d1b2e" stroke="#7c3aed" strokeWidth="1.5" />
-              <text x="430" y="88" textAnchor="middle" fill="#7c3aed" fontSize="9" fontWeight="700" letterSpacing="1">USER STEP</text>
-              <text x="430" y="108" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">👥 Name</text>
-              <text x="430" y="126" textAnchor="middle" fill="#6b7fa3" fontSize="10">Speakers</text>
-              <line x1="495" y1="100" x2="535" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
-              <text x="515" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">transcript</text>
-              <rect x="535" y="50" width="140" height="100" rx="12" fill="#0d1b2e" stroke="#00d4ff" strokeWidth="1.5" />
-              <text x="605" y="75" textAnchor="middle" fill="#00d4ff" fontSize="9" fontWeight="700" letterSpacing="1">AGENT 2</text>
-              <text x="605" y="95" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">Groq LLM</text>
-              <text x="605" y="113" textAnchor="middle" fill="#6b7fa3" fontSize="10">Extract Tasks</text>
-              <text x="605" y="129" textAnchor="middle" fill="#6b7fa3" fontSize="10">Llama 3.3 70B</text>
-              <line x1="675" y1="100" x2="710" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
-              <text x="692" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">JSON</text>
-              <rect x="710" y="50" width="140" height="100" rx="12" fill="#0d1b2e" stroke="#00d4ff" strokeWidth="1.5" />
-              <text x="780" y="75" textAnchor="middle" fill="#00d4ff" fontSize="9" fontWeight="700" letterSpacing="1">AGENT 3</text>
-              <text x="780" y="95" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">Groq LLM</text>
-              <text x="780" y="113" textAnchor="middle" fill="#6b7fa3" fontSize="10">Draft Email</text>
-              <text x="780" y="129" textAnchor="middle" fill="#6b7fa3" fontSize="10">Llama 3.3 70B</text>
-            </svg>
-          </div>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 20 }}>
-            {[
-              { label: 'AssemblyAI', color: '#00d4ff' },
-              { label: 'Groq', color: '#00d4ff' },
-              { label: 'Llama 3.3 70B', color: '#7c3aed' },
-              { label: 'FastAPI', color: '#7c3aed' },
-              { label: 'React + Vite', color: '#00d4ff' },
-              { label: 'Free to Build', color: '#00e676' },
-            ].map(b => (
-              <span key={b.label} style={{ padding: '4px 12px', borderRadius: 20, fontSize: 11,
-                fontWeight: 700, border: `1px solid ${b.color}40`, color: b.color, background: `${b.color}0f` }}>
-                {b.label}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* ════════════════════════════════════════════════════
-            SECTION 3 — WORKSHOP MATERIALS
-        ════════════════════════════════════════════════════ */}
-        <div style={S.card}>
-          <span style={S.label}>Workshop Materials</span>
-          <h2 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 24px', color: '#e8f0fe' }}>
-            AI Agents Bootcamp 
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-            {/* Lines 683-695: Brochure Card - NOW CLICKABLE */}
-                        {/* Lines 683-695: Brochure Card - NOW CLICKABLE */}
-            <a href="/AIAB_June5th_brochure.png" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-              <div style={{ background: '#080d18', border: '1px solid #1e3a5f', borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}>
-                <img src="/AIAB_brchre_thumbnail.png" alt="AI Agents Bootcamp Brochure"
-                  style={{ width: '100%', display: 'block', height: 220, objectFit: 'cover' }} />
-                <div style={{ padding: '14px 16px' }}>
-                  <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#e8f0fe' }}>Workshop Brochure</p>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6b7fa3' }}>Overview, outcomes, and who this is for</p>
-                </div>
-              </div>
-            </a>
-            <a href="/AI_Agents_Bootcamp_Curriculum.pdf" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-              <div style={{ background: '#080d18', border: '1px solid #7c3aed66', borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}>
-                <div style={{ position: 'relative', height: 220, overflow: 'hidden' }}>
-                  <img src="/AIAB_CUR_Thumbnail.png" alt="Curriculum"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.5)' }} />
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex',
-                    flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 36 }}>📄</span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: '#fff',
-                      background: '#7c3aedcc', padding: '6px 16px', borderRadius: 20 }}>
-                      VIEW CURRICULUM
-                    </span>
-                  </div>
-                </div>
-                <div style={{ padding: '14px 16px' }}>
-                  <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#e8f0fe' }}>Full Curriculum PDF</p>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6b7fa3' }}>Full day schedule and build phases</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        {/* ════════════════════════════════════════════════════
-            SECTION 4 — THE APP
-            Visually separated: near-black background,
-            animated cyan/purple border, scan-line overlay,
-            terminal header bar, corner bracket accents
-        ════════════════════════════════════════════════════ */}
+        {/* SECTION 2: APP DEMO (Moved UP) */}
         <div className="app-panel" style={{
           position: 'relative',
           background: '#020408',
@@ -719,7 +627,7 @@ export default function App() {
                 ))}
               </div>
               <span style={{ fontSize: 11, color: '#6b7fa3', letterSpacing: '2px', fontFamily: 'monospace' }}>
-                MEETINGMIND v2.0
+                MEETINGMIND v2.4
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1233,7 +1141,76 @@ export default function App() {
           </div>{/* end app content */}
         </div>{/* end app-panel */}
 
-        {/* Footer */}
+        {/* SECTION 3: SAMPLE REPORT PREVIEW (NEW) */}
+        <SampleReportPreview />
+
+        {/* SECTION 4: THREE-AGENT PIPELINE (Moved DOWN) */}
+        <div style={S.card}>
+          <span className="pipeline-section-label" style={{ ...S.label, color: 'var(--color-accent-gold, #f59e0b)' }}>How It Works</span>
+          <h2 className="pipeline-heading" style={{ fontSize: 20, fontWeight: 800, margin: '0 0 28px', color: '#e8f0fe' }}>
+            The Three-Agent Pipeline
+          </h2>
+          <div style={{ overflowX: 'auto' }}>
+            <svg viewBox="0 0 860 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', minWidth: 600 }}>
+              <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L8,3 z" fill="#1e3a5f" />
+                </marker>
+              </defs>
+              <rect className="pipeline-card" x="10" y="60" width="130" height="80" rx="12" fill="#0d1b2e" stroke="#1e3a5f" strokeWidth="1.5" />
+              <text x="75" y="88" textAnchor="middle" fill="#6b7fa3" fontSize="10" fontWeight="700" letterSpacing="1">INPUT</text>
+              <text x="75" y="108" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">📱 Phone</text>
+              <text x="75" y="126" textAnchor="middle" fill="#6b7fa3" fontSize="10">MP3 / M4A</text>
+              <line x1="140" y1="100" x2="175" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
+              <text x="157" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">email</text>
+              <rect className="pipeline-card" x="175" y="50" width="150" height="100" rx="12" fill="#0d1b2e" stroke="#00d4ff" strokeWidth="1.5" />
+              <text x="250" y="75" textAnchor="middle" fill="#00d4ff" fontSize="9" fontWeight="700" letterSpacing="1">AGENT 1</text>
+              <text x="250" y="95" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">AssemblyAI</text>
+              <text x="250" y="113" textAnchor="middle" fill="#6b7fa3" fontSize="10">Transcription</text>
+              <text x="250" y="129" textAnchor="middle" fill="#6b7fa3" fontSize="10">+ Diarization</text>
+              <line x1="325" y1="100" x2="365" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
+              <text x="345" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">speakers</text>
+              <rect className="pipeline-card" x="365" y="60" width="130" height="80" rx="12" fill="#0d1b2e" stroke="#7c3aed" strokeWidth="1.5" />
+              <text x="430" y="88" textAnchor="middle" fill="#7c3aed" fontSize="9" fontWeight="700" letterSpacing="1">USER STEP</text>
+              <text x="430" y="108" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">👥 Name</text>
+              <text x="430" y="126" textAnchor="middle" fill="#6b7fa3" fontSize="10">Speakers</text>
+              <line x1="495" y1="100" x2="535" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
+              <text x="515" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">transcript</text>
+              <rect className="pipeline-card primary-node" x="535" y="50" width="140" height="100" rx="12" fill="#0d1b2e" stroke="#00d4ff" strokeWidth="1.5" />
+              <text x="605" y="75" textAnchor="middle" fill="#00d4ff" fontSize="9" fontWeight="700" letterSpacing="1">AGENT 2</text>
+              <text x="605" y="95" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">Groq LLM</text>
+              <text x="605" y="113" textAnchor="middle" fill="#6b7fa3" fontSize="10">Extract Tasks</text>
+              <text x="605" y="129" textAnchor="middle" fill="#6b7fa3" fontSize="10">Llama 3.3 70B</text>
+              <line x1="675" y1="100" x2="710" y2="100" stroke="#1e3a5f" strokeWidth="2" markerEnd="url(#arrow)" />
+              <text x="692" y="93" textAnchor="middle" fill="#6b7fa3" fontSize="9">JSON</text>
+              <rect className="pipeline-card" x="710" y="50" width="140" height="100" rx="12" fill="#0d1b2e" stroke="#00d4ff" strokeWidth="1.5" />
+              <text x="780" y="75" textAnchor="middle" fill="#00d4ff" fontSize="9" fontWeight="700" letterSpacing="1">AGENT 3</text>
+              <text x="780" y="95" textAnchor="middle" fill="#e8f0fe" fontSize="13" fontWeight="800">Groq LLM</text>
+              <text x="780" y="113" textAnchor="middle" fill="#6b7fa3" fontSize="10">Draft Email</text>
+              <text x="780" y="129" textAnchor="middle" fill="#6b7fa3" fontSize="10">Llama 3.3 70B</text>
+            </svg>
+          </div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 20 }}>
+            {[
+              { label: 'AssemblyAI', color: '#f59e0b' },
+              { label: 'Groq', color: '#f59e0b' },
+              { label: 'Llama 3.3 70B', color: '#f59e0b' },
+              { label: 'FastAPI', color: '#f59e0b' },
+              { label: 'React + Vite', color: '#f59e0b' },
+              { label: 'Free to Build', color: '#f59e0b' },
+            ].map(b => (
+              <span key={b.label} className="tech-pill" style={{ padding: '4px 12px', borderRadius: 20, fontSize: 11,
+                fontWeight: 700, border: `1px solid rgba(245,158,11,0.3)`, color: '#94a3b8', background: 'rgba(245,158,11,0.08)' }}>
+                {b.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 5: WORKSHOP MATERIALS (NEW CARDS) */}
+        <WorkshopCards />
+
+        {/* SECTION 6: FOOTER */}
         <div style={{ textAlign: 'center', padding: '20px 0 40px', fontSize: 11, color: '#6b7fa3', letterSpacing: '1px' }}>
           Built with Intellica AI · Powered by AssemblyAI + Groq · AI Agents Bootcamp
         </div>
